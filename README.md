@@ -32,20 +32,20 @@ eth-das-research-prototype/
 
 ## 3. Core Capabilities
 
-### 🔧 Custom P2P Transport Layer
+### Custom P2P Transport Layer
 *   Implemented a raw TCP protocol using `tokio` and `tokio_util::codec`.
 *   Bypassed high-level abstractions (`libp2p`) to manually handle stream framing and buffer management, demonstrating low-level network engineering skills.
 
-### 🧩 Erasure Coded Propagation
+### Erasure Coded Propagation
 *   Integrates `reed-solomon-erasure` (Galois Field $2^8$) to fragment binary payloads.
 *   **Encoding:** Splits data into `k=4` data shards + `m=2` parity shards.
 *   **Reconstruction:** Proves mathematical reconstruction of the original 10MB blob from *any* `k` shards.
 
-### 🔐 Cryptographic Security
+### Cryptographic Security
 *   **Session Auth:** Implemented **Ed25519** handshakes to verify peer identity before data exchange.
 *   **Integrity:** Enforces SHA-256 checksum verification on reconstructed payloads.
 
-### 📈 Telemetry & Benchmarking
+### Telemetry & Benchmarking
 *   Built an internal metrics engine to measure **Wire Overhead**, **Throughput (MB/s)**, and **Efficiency %**.
 
 ## 4. Experimental Results
@@ -54,23 +54,41 @@ Benchmarks were conducted using a **10 MB** random binary payload (simulating a 
 
 | Propagation Strategy | Payload Size | Wire Usage | Throughput | Latency | Efficiency |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Naive (Legacy)** | 10 MB | 33.55 MB | 168 MB/s | **199 ms** | Baseline |
-| **DAS (Full Node)** | 10 MB | ~35.1 MB | ~80 MB/s | ~250 ms | Verified |
-| **DAS (Light Client)** | 10 MB | **17.31 MB** | 81 MB/s | 212 ms | **48.4% Saved** |
+| **Naive (Legacy)** | 10 MB | 33.55 MB | 286.44 MB/s | 117.12 ms | Baseline |
+| **DAS (Full Node)** | 10 MB | 34.09 MB | 146.31 MB/s | 232.98 ms | Verified |
+| **DAS (Light Client)** | 10 MB | **17.31 MB** | 148.25 MB/s | **116.78 ms** | **48.4% Saved** |
 
-### 📝 Benchmark Legend
+### Benchmark Legend
 *   **Naive (Legacy):** Represents current Ethereum architecture. The node downloads 100% of the data in one contiguous chunk.
 *   **DAS (Full Node):** Represents a validating node. It downloads enough shards ($k=4$) to mathematically reconstruct and verify the full block, proving data correctness.
 *   **DAS (Light Client):** Represents a resource-constrained node. It downloads a random subset of shards ($k=2$). It verifies data availability with high probability without incurring the bandwidth cost of a full download.
 
-### 📉 Key Finding: Bandwidth Reduction
+### Visual Proof (Telemetry)
+
+**1. Naive Propagation (Baseline)**
+*High bandwidth usage (33.55MB) and high overhead due to full-blob transmission.*
+![Naive Benchmark](screenshots/1_naive_benchmark.png)
+
+<br>
+
+**2. DAS Full Node (Reconstruction)**
+*Receiver downloads the minimum threshold ($k=4$), reconstructs the file via Reed-Solomon, and verifies integrity.*
+![DAS Full Reconstruction](screenshots/2_das_full_reconstruction.png)
+
+<br>
+
+**3. DAS Light Client (The Efficiency Solution)**
+*Receiver samples random shards ($k=2$), verifying availability while saving ~48% bandwidth.*
+![DAS Light Client Savings](screenshots/3_das_light_client_savings.png)
+
+### Key Finding: Bandwidth Reduction
 The DAS Light Client mode demonstrated a **~48.4% reduction** in bandwidth requirements. In a production environment with $N$ peers, this savings curve approaches >99%, as the sampling requirement ($k$) remains constant regardless of total block size.
 
 ## 5. Technical Challenges & Analysis
 
 During the development and benchmarking of this prototype, several engineering constraints and trade-offs were identified:
 
-### 🛑 The Latency Paradox (CPU vs. I/O Bound)
+### The Latency Paradox (CPU vs. I/O Bound)
 **Observation:** The DAS Sampling mode exhibited slightly higher latency (212ms) compared to Naive Flooding (199ms), despite transmitting 50% less data.
 
 **Analysis:**
@@ -80,7 +98,7 @@ During the development and benchmarking of this prototype, several engineering c
 **Conclusion:**
 The marginal increase in latency (~6%) is an acceptable trade-off for the massive reduction in bandwidth (~48%), as bandwidth is the primary bottleneck for Ethereum node decentralization.
 
-### 🛡 Data Integrity in Fragmented Networks
+### Data Integrity in Fragmented Networks
 Ensuring data correctness without a full file download is non-trivial. This system solves it by:
 *   **Sender:** Attaching a SHA-256 checksum of the *original* blob to every shard.
 *   **Receiver:** Reconstructing the blob to `buffer`, hashing the result, and comparing it against the shard-attached checksum before committing to disk.
