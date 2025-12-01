@@ -1,0 +1,20 @@
+[package]
+name = "eth-das-prototype"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.38", features = ["full"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+futures = "0.3"
+bytes = "1.6"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ed25519-dalek = { version = "2.1", features = ["rand_core"] }
+sha2 = "0.10"
+hex = "0.4"
+rand = "0.8"
+reed-solomon-erasure = "6.0"
+clap = { version = "4.5", features = ["derive"] }
+colored = "2.1"
+anyhow = "1.0"
