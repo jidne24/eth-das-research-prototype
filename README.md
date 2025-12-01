@@ -72,13 +72,13 @@ Benchmarks were conducted using a **10 MB** random binary payload (simulating a 
 <br>
 
 **2. DAS Full Node (Reconstruction)**
-*Receiver downloads the minimum threshold ($k=4$), reconstructs the file via Reed-Solomon, and verifies integrity.*
+*Receiver downloads the minimum threshold (k = 4), reconstructs the file via Reed-Solomon, and verifies integrity.*
 ![DAS Full Reconstruction](screenshots/2_das_full_reconstruction.png)
 
 <br>
 
 **3. DAS Light Client (The Efficiency Solution)**
-*Receiver samples random shards ($k=2$), verifying availability while saving ~48% bandwidth.*
+*Receiver samples random shards (k = 2), verifying availability while saving ~48% bandwidth.*
 ![DAS Light Client Savings](screenshots/3_das_light_client_savings.png)
 
 ### Key Finding: Bandwidth Reduction
@@ -88,15 +88,15 @@ The DAS Light Client mode demonstrated a **~48.4% reduction** in bandwidth requi
 
 During the development and benchmarking of this prototype, several engineering constraints and trade-offs were identified:
 
-### The Latency Paradox (CPU vs. I/O Bound)
-**Observation:** The DAS Sampling mode exhibited slightly higher latency (212ms) compared to Naive Flooding (199ms), despite transmitting 50% less data.
+### The Reconstruction Cost (CPU vs. I/O Bound)
+**Observation:** While the DAS Light Client latency (116ms) matched the Naive baseline (117ms), the **DAS Full Node** mode was significantly slower (232ms), taking nearly **2x the time** to complete the transfer.
 
 **Analysis:**
-1.  **Computational Overhead:** Unlike Naive transfer (which is purely I/O bound), DAS requires significant CPU time for **Reed-Solomon Encoding** (Galois Field arithmetic over $2^8$) to split the blob and calculate parity.
-2.  **Serialization Overhead:** Sending $k$ small shard packets incurs higher syscall and framing overhead (Nagle's algorithm, JSON framing) compared to streaming a single monolithic blob.
+1.  **Computational Bottleneck:** The Full Node mode triggers the **Reed-Solomon Reconstruction** engine. The additional ~115ms latency represents the CPU time required to solve the Galois Field ($2^8$) matrix equations to rebuild the missing shards.
+2.  **Serialization Overhead:** Sending multiple small shard packets incurs higher syscall and framing overhead compared to streaming a single monolithic blob.
 
 **Conclusion:**
-The marginal increase in latency (~6%) is an acceptable trade-off for the massive reduction in bandwidth (~48%), as bandwidth is the primary bottleneck for Ethereum node decentralization.
+This benchmark highlights that while **Light Clients** enjoy massive bandwidth savings with zero latency penalty, **Full Nodes** bear the computational burden of reconstruction. This validates the Ethereum roadmap's reliance on powerful Proposers/Builders to handle the heavy lifting, allowing Light Clients to remain lightweight.
 
 ### Data Integrity in Fragmented Networks
 Ensuring data correctness without a full file download is non-trivial. This system solves it by:
