@@ -1,12 +1,10 @@
-# Ethereum DAS Research Prototype
-
-<div align=center>
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![Language](https://img.shields.io/badge/Rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
   [![Status](https://img.shields.io/badge/Status-Research_Prototype-blue.svg)]()
-</div>
+  
+# Ethereum DAS Research Prototype
 
-> **Abstract:** A discrete-event TCP networking simulation designed to quantify the bandwidth efficiency of **Data Availability Sampling (DAS)**. This tool benchmarks the transition from legacy full-block propagation to the sampling-based availability checks proposed in Ethereum's **Danksharding (EIP-4844)** roadmap.
+**Abstract:** A discrete-event TCP networking simulation designed to quantify the bandwidth efficiency of **Data Availability Sampling (DAS)**. This tool benchmarks the transition from legacy full-block propagation to the sampling-based availability checks proposed in Ethereum's **Danksharding (EIP-4844)** roadmap.
 
 ---
 
