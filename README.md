@@ -1,8 +1,10 @@
 # Ethereum DAS Research Prototype
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Language](https://img.shields.io/badge/Rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
-[![Status](https://img.shields.io/badge/Status-Research_Prototype-blue.svg)]()
+<div align=center>
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Language](https://img.shields.io/badge/Rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
+  [![Status](https://img.shields.io/badge/Status-Research_Prototype-blue.svg)]()
+</div>
 
 > **Abstract:** A discrete-event TCP networking simulation designed to quantify the bandwidth efficiency of **Data Availability Sampling (DAS)**. This tool benchmarks the transition from legacy full-block propagation to the sampling-based availability checks proposed in Ethereum's **Danksharding (EIP-4844)** roadmap.
 
@@ -138,8 +140,3 @@ Simulates a node verifying availability via random sampling.
 ```bash
 cargo run --release -- send --peer 127.0.0.1:8080 --file blob_data.txt --mode das-sample
 ```
-
----
-
-> *This project was developed as a research prototype for the Ethereum Foundation Internship application.*
-
